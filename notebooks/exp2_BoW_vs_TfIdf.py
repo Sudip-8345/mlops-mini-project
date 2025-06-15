@@ -96,7 +96,7 @@ import dagshub
 dagshub.init(repo_owner='Sudip-8345', repo_name='DVC-git-mini-Project', mlflow=True)
 mlflow.set_tracking_uri('https://dagshub.com/Sudip-8345/DVC-git-mini-Project.mlflow')
 
-mlflow.set_experiment("tweet_emotion_classification_exp_v2")
+mlflow.set_experiment('tweet_emotion_classification using best algo and vectorizer')
 
 vectorizers = {'bow': CountVectorizer(), 'tfidf': TfidfVectorizer()}
 
@@ -108,9 +108,9 @@ algos = {
     'GradientBoostingClassifier': GradientBoostingClassifier()
 }
 
-for algo_name, algo in algos.items():
-    for vectorizer_name, vectorizer in vectorizers.items():
-        with mlflow.start_run():
+with mlflow.start_run():
+    for algo_name, algo in algos.items():
+        for vectorizer_name, vectorizer in vectorizers.items():
             X = vectorizer.fit_transform(df['content'])
             y = df['sentiment']
             
@@ -129,7 +129,7 @@ for algo_name, algo in algos.items():
             mlflow.log_param('test_size', 0.2)
 
             if algo_name == 'logistic_regression':
-                mlflow.log_param("max_iter", algo.max_iter)
+                mlflow.log_param("max_iter", algo.C)
             elif algo_name == 'SVC':
                 mlflow.log_param("kernel", algo.kernel)
             elif algo_name == 'RandomForestClassifier':
@@ -143,11 +143,7 @@ for algo_name, algo in algos.items():
             mlflow.log_metric("recall", recall)
             mlflow.log_metric("precision", precision)
             mlflow.log_metric("f1_score", f1)
-
-            # Optional: log model artifact
-            # import joblib
-            # joblib.dump(algo, "model.pkl")
-            # mlflow.log_artifact("model.pkl")
+            mlflow.log_artifact(__file__)
 
             print(f"Algorithm: {algo_name}, Vectorizer: {vectorizer_name}, Accuracy: {accuracy}, Recall: {recall}, Precision: {precision}, F1 Score: {f1}")
 
